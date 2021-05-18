@@ -22,7 +22,8 @@ def generate():
                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc3.communicate()
         if err:
-            g_warnings.labels(host, "Problems grepping log - {}".format(err)).set(1)
+            g_warnings.labels(host, "Problem grepping log - {}".format(err)).set(1)
+            g_totals.labels(host, "Problem grepping log - {}".format(err)).set(1)
         else:
             list_of_errors = Counter([(x.split(' ')[2], x.split(' ')[3]) for x in out.split('\n') if x != ''])
             total_warnings = sum(list_of_errors[x] for x in list_of_errors if x[0] == 'WARN')
@@ -44,8 +45,8 @@ def generate():
             g_totals.labels(host, 'Total Fatal').set(total_fatal)
 
     except Exception as e:
-        g_warnings.labels(host, "Problems grepping log - {}".format(e)).set(1)
-        g_totals.labels(host, "Problems grepping log - {}".format(e)).set(1)
+        g_warnings.labels(host, "Problem running exporter - {}".format(e)).set(1)
+        g_totals.labels(host, "Problem running exporter- {}".format(e)).set(1)
 
 
 metrics_app = make_wsgi_app()
